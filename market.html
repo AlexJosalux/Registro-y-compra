@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="""UTF-8
+    <title></title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center">
+    <div id="login" class="bg-white p-8 rounded shadow-md w-80">
+        <h2 class="text-2xl font-bold mb-4 text-center">Login Carrito de Compras</h2>
+        <input id="user" type="text" placeholder="Usuario" class="mb-2 w-full px-3 py-2 border rounded">
+        <input id="pass" type="password" placeholder="Contraseña" class="mb-4 w-full px-3 py-2 border rounded">
+        <button onclick="login()" class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600">Entrar</button>
+        <p id="loginError" class="text-red-500 mt-2 text-center hidden">Usuario o contraseña incorrectos</p>
+    </div>
+
+    <div id="app" class="hidden w-full max-w-2xl mx-auto mt-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold">Productos</h2>
+            <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Cerrar sesion</button>
+        </div>
+        <div id="products" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+        <div class="mt-8 p-4 bg-white rounded shadow flex justify-between items-center">
+            <span class="font-semibold">Total de la compra:</span>
+            <span id="total" class="text-xl font-bold text-green-600">$0</span>
+        </div>
+    </div>
+
+    <script>
+        const users = [
+            { username: "alex", password: "1234" },
+            { username: "joel", password: "abcd" }
+        ];
+
+        const products = [
+            { id: 1, name: "Laptop", price: 799 },
+            { id: 2, name: "Auriculares", price: 35 },
+            { id: 3, name: "Mouse", price: 15},
+            { id: 4, name: "Teclado", price: 39 }
+        ];
+
+        let cart = [];
+
+        function login() {
+            const user = document.getElementById('user').value.trim();
+            const pass = document.getElementById('pass').value.trim();
+            const found = users.find(u => u.username === user && u.password === pass);
+            if (found) {
+                document.getElementById('login').classList.add('hidden');
+                document.getElementById('app').classList.remove('hidden');
+                renderProducts();
+                updateTotal();
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function logout() {
+            cart = [];
+            document.getElementById('user').value = '';
+            document.getElementById('pass').value = '';
+            document.getElementById('loginError').classList.add('hidden');
+            document.getElementById('app').classList.add('hidden');
+            document.getElementById('login').classList.remove('hidden');
+        }
+
+        function renderProducts() {
+            const container = document.getElementById('products');
+            container.innerHTML = '';
+            products.forEach(prod => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded shadow flex flex-col items-center";
+                card.innerHTML = `
+                    <h3 class="text-lg font-bold mb-2">${prod.name}</h3>
+                    <p class="mb-4 text-gray-700">$${prod.price}</p>
+                    <button onclick="addToCart(${prod.id})" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Agregar</button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function addToCart(id) {
+            const prod = products.find(p => p.id === id);
+            if (prod) cart.push(prod);
+            updateTotal();
+        }
+
+        function updateTotal() {
+            const total = cart.reduce((sum, p) => sum + p.price, 0);
+            document.getElementById('total').textContent = `$${total}`;
+        }
+    </script>
+</body>
+</html>
